@@ -1,5 +1,6 @@
 import json
 from oweather_api_parser import OpenWeatherMapAPIParser
+from prettytable import PrettyTable
 import ipdb
 
 class OpenWeatherMapPrinter:
@@ -7,7 +8,29 @@ class OpenWeatherMapPrinter:
     self.parser = OpenWeatherMapAPIParser(api_key)
 
   def print_current_weather(self, city):
-    self.print_json(self.parser.parse_current_weather(city))
+    current_weather = self.parser.parse_current_weather(city)
+    print
+    print "Location:\t", current_weather["city"], ", ", \
+          current_weather["country"]
+    print "Weather:\t", current_weather["weather_main"], ", ", \
+          current_weather["weather_desc"]
+    table = PrettyTable(["Variable", "Measurement", "Unit"])
+    table.align["Variable"] = "l"
+    table.add_row(["Temperature", current_weather["temp"], "Kelvin"])
+    table.add_row(["Pressure", current_weather["pressure"], "hPa"])
+    table.add_row(["Humidity", current_weather["humidity"], "%"])
+    table.add_row(["Wind Speed", current_weather["wind_speed"], "meter/sec"])
+    table.add_row(["Wind Direction", current_weather["wind_deg"], ""])
+    table.add_row(["Clouds", current_weather["clouds_perc"], "%"])
+    if current_weather["rain_volume"] is None:
+      table.add_row(["Rain Volume", 0, "mm"])
+    else:
+      table.add_row(["Rain Volume", current_weather["rain_volume"], "mm"])
+    if current_weather["snow_volume"] is None:
+      table.add_row(["Snow Volume", 0, "mm"])
+    else:
+      table.add_row(["Snow Volume", current_weather["snow_volume"], "mm"])
+    print table
 
   def print_five_day_three_hour_forecast(self, city):
     weather_json_list = self.parser.parse_five_day_three_hour_forecast(city)
