@@ -20,8 +20,8 @@ def process_arguments():
       "-d",
       "--days",
       dest="n",
-      type=int,
-      help="N days weather forcast")
+      type=check_days,
+      help="N days weather forcast (N <= 16)")
   key_group = parser.add_mutually_exclusive_group(required=True)
   key_group.add_argument(
       "-k",
@@ -38,6 +38,15 @@ def process_arguments():
       help="name of city you want to get weather for",
       nargs=1)
   return parser.parse_args()
+
+def check_days(days):
+  try:
+    d = int(days)
+    if d > 16 or d < 1:
+      raise ValueError
+  except:
+    raise argparse.ArgumentTypeError("%s is not a valid value for days" % days)
+  return d
 
 def print_weather_info(args, api_key):
   printer = OpenWeatherMapPrinter(api_key)
