@@ -40,7 +40,7 @@ class OpenWeatherMapAPIParser:
     weather_list = [{"city": city, "country": country}]
     for weather in weather_json["list"]:
       weather_dict = {}
-      weather_dict["date_text"] = weather["dt_txt"]
+      weather_dict["dt_text"] = weather["dt_txt"]
       weather_dict["humidity"] = weather["main"]["humidity"]
       weather_dict["pressure"] = weather["main"]["pressure"]
       weather_dict["temp"] = weather["main"]["temp"]

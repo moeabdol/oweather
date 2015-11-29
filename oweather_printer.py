@@ -17,8 +17,8 @@ class OpenWeatherMapPrinter:
     table = PrettyTable(["Variable", "Measurement", "Unit"])
     table.align["Variable"] = "l"
     table.add_row(["Temperature", current_weather["temp"], "Kelvin"])
-    table.add_row(["Pressure", current_weather["pressure"], "hPa"])
     table.add_row(["Humidity", current_weather["humidity"], "%"])
+    table.add_row(["Pressure", current_weather["pressure"], "hPa"])
     table.add_row(["Wind Speed", current_weather["wind_speed"], "meter/sec"])
     table.add_row(["Wind Direction", current_weather["wind_deg"], ""])
     table.add_row(["Clouds", current_weather["clouds_perc"], "%"])
@@ -33,9 +33,34 @@ class OpenWeatherMapPrinter:
     print table
 
   def print_five_day_three_hour_forecast(self, city):
-    weather_json_list = self.parser.parse_five_day_three_hour_forecast(city)
-    for weather_dict in weather_json_list:
-      self.print_json(weather_dict)
+    # weather_json_list = self.parser.parse_five_day_three_hour_forecast(city)
+    # for weather_dict in weather_json_list:
+    #   self.print_json(weather_dict)
+    forecast_list = self.parser.parse_five_day_three_hour_forecast(city)
+    city, country = forecast_list[0]["city"], forecast_list[0]["country"]
+    for forecast in forecast_list[1:]:
+      print "Location:\t", city, ", ", country
+      print "Date/Time:\t", forecast["dt_text"]
+      print "Weather:\t", forecast["weather_main"], ", ", \
+            forecast["weather_desc"]
+      table = PrettyTable(["Variable", "Measurement", "Unit"])
+      table.align["Variable"] = "l"
+      table.add_row(["Temperature", forecast["temp"], "Kelvin"])
+      table.add_row(["Humidity", forecast["humidity"], "%"])
+      table.add_row(["Pressure", forecast["pressure"], "hPa"])
+      table.add_row(["Wind Speed", forecast["wind_speed"], "meter/sec"])
+      table.add_row(["Wind Direction", forecast["wind_deg"], ""])
+      table.add_row(["Clouds", forecast["clouds_perc"], "%"])
+      if forecast["rain_volume"] is None:
+        table.add_row(["Rain Volume", 0, "mm"])
+      else:
+        table.add_row(["Rain Volume", forecast["rain_volume"], "mm"])
+      if forecast["snow_volume"] is None:
+        table.add_row(["Snow Volume", 0, "mm"])
+      else:
+        table.add_row(["Snow Volume", forecast["snow_volume"], "mm"])
+      print table
+      print
 
   def print_daily_forcast(self, city, days):
     weather_json_list = self.parser.parse_daily_forecast(city, days)
