@@ -1,7 +1,7 @@
 import json
 from oweather_api_parser import OpenWeatherMapAPIParser
 from prettytable import PrettyTable
-import ipdb
+import datetime
 
 class OpenWeatherMapPrinter:
   def __init__(self, api_key):
@@ -9,10 +9,9 @@ class OpenWeatherMapPrinter:
 
   def print_current_weather(self, city):
     current_weather = self.parser.parse_current_weather(city)
-    print
     print "Location:\t", current_weather["city"], ", ", \
           current_weather["country"]
-    print "Weather:\t", current_weather["weather_main"], ", ", \
+    print "Condition:\t", current_weather["weather_main"], ", ", \
           current_weather["weather_desc"]
     table = PrettyTable(["Variable", "Measurement", "Unit"])
     table.align["Variable"] = "l"
@@ -31,14 +30,16 @@ class OpenWeatherMapPrinter:
     else:
       table.add_row(["Snow Volume", current_weather["snow_volume"], "mm"])
     print table
+    print "Last Updated (Local):\t", \
+          self.convert_utc_to_datetime(current_weather["dt"])
+    print
 
   def print_five_day_three_hour_forecast(self, city):
     forecast_list = self.parser.parse_five_day_three_hour_forecast(city)
     city, country = forecast_list[0]["city"], forecast_list[0]["country"]
     for forecast in forecast_list[1:]:
       print "Location:\t", city, ", ", country
-      print "Date/Time:\t", forecast["dt_text"]
-      print "Weather:\t", forecast["weather_main"], ", ", \
+      print "Condition:\t", forecast["weather_main"], ", ", \
             forecast["weather_desc"]
       table = PrettyTable(["Variable", "Measurement", "Unit"])
       table.align["Variable"] = "l"
@@ -57,6 +58,8 @@ class OpenWeatherMapPrinter:
       else:
         table.add_row(["Snow Volume", forecast["snow_volume"], "mm"])
       print table
+      print "Last Updated (Local)\t", self.convert_utc_to_datetime(forecast["dt"])
+      print "Last Updated (UTC):\t", forecast["dt_txt"]
       print
 
   def print_daily_forcast(self, city, days):
@@ -64,8 +67,7 @@ class OpenWeatherMapPrinter:
     city, country = forecast_list[0]["city"], forecast_list[0]["country"]
     for forecast in forecast_list[1:]:
       print "Location:\t", city, ", ", country
-      print "Date/Time:\t", forecast["dt"]
-      print "Weather:\t", forecast["weather_main"], ", ", \
+      print "Condition:\t", forecast["weather_main"], ", ", \
             forecast["weather_desc"]
       table = PrettyTable(["Variable", "Measurement", "Unit"])
       table.align["Variable"] = "l"
@@ -89,8 +91,14 @@ class OpenWeatherMapPrinter:
       else:
         table.add_row(["Snow Volume", forecast["snow_volume"], "mm"])
       print table
+      print "Last Updated (Local):\t", \
+            self.convert_utc_to_datetime(forecast["dt"])
       print
 
   def print_json(self, json_dict):
     print json.dumps(json_dict, sort_keys=True, indent=4,
                       separators=(",", ": "))
+
+  def convert_utc_to_datetime(self, utc_time):
+    return datetime.datetime.fromtimestamp(int(utc_time)).strftime(
+        "%Y-%m-%d %H:%M:%S")

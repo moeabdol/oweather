@@ -13,6 +13,7 @@ class OpenWeatherMapAPIParser:
       print "Unknown city"
       return
     weather_dict["country"] = weather_json["sys"]["country"]
+    weather_dict["dt"] = weather_json["dt"]
     weather_dict["humidity"] = weather_json["main"]["humidity"]
     weather_dict["pressure"] = weather_json["main"]["pressure"]
     weather_dict["temp"] = weather_json["main"]["temp"]
@@ -40,7 +41,8 @@ class OpenWeatherMapAPIParser:
     weather_list = [{"city": city, "country": country}]
     for weather in weather_json["list"]:
       weather_dict = {}
-      weather_dict["dt_text"] = weather["dt_txt"]
+      weather_dict["dt"] = weather["dt"]
+      weather_dict["dt_txt"] = weather["dt_txt"]
       weather_dict["humidity"] = weather["main"]["humidity"]
       weather_dict["pressure"] = weather["main"]["pressure"]
       weather_dict["temp"] = weather["main"]["temp"]
