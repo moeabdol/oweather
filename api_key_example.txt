@@ -1,1 +1,0 @@
-oweather_api_key = "insert you open weather map api key here"
