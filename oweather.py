@@ -24,25 +24,25 @@ class OpenWeatherMap:
             "-k",
             dest="token",
             type=str,
-            help="provide open weather map API key token from command line")
+            help="connect to open weather map using API key token")
         key_group.add_argument(
             "-K",
             dest="file",
             type=argparse.FileType("r"),
-            help="provide open weather map API key file")
+            help="connect to  open weather map using API key file")
         forecast_group = parser.add_mutually_exclusive_group(required=False)
         forecast_group.add_argument(
             "-f",
             "--forecast",
             dest="forecast",
             action="store_true",
-            help="five day three hour weather forcast")
+            help="show five day three hour weather forcast")
         forecast_group.add_argument(
             "-d",
             "--days",
             dest="n",
             type=self.check_days,
-            help="N days daily weather forcast (N >= 16)")
+            help="show N days daily weather forcast (N >= 16)")
         unit_group = parser.add_mutually_exclusive_group(required=False)
         unit_group.add_argument(
             "-m",
@@ -51,14 +51,14 @@ class OpenWeatherMap:
             const="metric",
             action="store_const",
             default="metric",
-            help="print weather data in metric system (default)")
+            help="show weather data in metric system (default)")
         unit_group.add_argument(
             "-i",
             "--imperial",
             dest="units",
             const="imperial",
             action="store_const",
-            help="print weather data in imperial system")
+            help="show weather data in imperial system")
         parser.add_argument(
             "city",
             help="name of city you want to get weather for",
