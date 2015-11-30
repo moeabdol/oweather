@@ -1,14 +1,17 @@
 from oweather_api_wrapper import OpenWeatherMapAPIWrapper
 
 class OpenWeatherMapAPIParser:
-    def parse_current_weather(self, json):
+    def parse_current_weather(self, data):
+        weather_dict = {}
         try:
-            weather_dict = {}
+            json = data["json"]
+            units = data["units"]
             weather_dict["city"] = json["name"]
         except:
             print "Unknown city"
             return
         weather_dict["country"] = json["sys"]["country"]
+        weather_dict["units"] = units
         weather_dict["dt"] = json["dt"]
         weather_dict["humidity"] = json["main"]["humidity"]
         weather_dict["pressure"] = json["main"]["pressure"]
@@ -26,14 +29,16 @@ class OpenWeatherMapAPIParser:
             weather_dict["snow_volume"] = json["snow"]["3h"]
         return weather_dict
 
-    def parse_five_day_three_hour_forecast(self, json):
+    def parse_five_day_three_hour_forecast(self, data):
         try:
+            json = data["json"]
+            units = data["units"]
             city = json["city"]["name"]
         except:
             print "Unknown city"
             return
         country = json["city"]["country"]
-        weather_list = [{"city": city, "country": country}]
+        weather_list = [{"city": city, "country": country, "units": units}]
         for weather in json["list"]:
             weather_dict = {}
             weather_dict["dt"] = weather["dt"]
@@ -55,14 +60,18 @@ class OpenWeatherMapAPIParser:
             weather_list.append(weather_dict)
         return weather_list
 
-    def parse_daily_forecast(self, json):
+    def parse_daily_forecast(self, data):
         try:
+            json = data["json"]
+            units = data["units"]
+            days = data["days"]
             city = json["city"]["name"]
         except:
             print "Unknown city"
             return
         country = json["city"]["country"]
-        weather_list = [{"city": city, "country": country}]
+        weather_list = [{"city": city, "country": country, "days": days,
+            "units": units}]
         for weather in json["list"]:
             weather_dict = {}
             weather_dict["dt"] = weather["dt"]

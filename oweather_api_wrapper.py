@@ -17,7 +17,8 @@ class OpenWeatherMapAPIWrapper:
         appid_query = "&APPID={}".format(self.api_key)
         end_point = self.current_weather_end_point + city_query + \
                     units_query + appid_query
-        return ujson.loads(requests.get(end_point).text)
+        return {"json": ujson.loads(requests.get(end_point).text),
+                "units": units}
 
     def get_five_day_three_hour_forecast_by_city_name(self, city, units):
         city_query = "?q={}".format(city)
@@ -25,7 +26,8 @@ class OpenWeatherMapAPIWrapper:
         appid_query = "&APPID={}".format(self.api_key)
         end_point = self.five_day_three_hour_forecast_end_point + city_query + \
                     units_query + appid_query
-        return ujson.loads(requests.get(end_point).text)
+        return {"json": ujson.loads(requests.get(end_point).text),
+                "units": units}
 
     def get_daily_forecast_by_city_name(self, city, days, units):
         city_query = "?q={}".format(city)
@@ -34,4 +36,6 @@ class OpenWeatherMapAPIWrapper:
         appid_query = "&APPID={}".format(self.api_key)
         end_point = self.daily_forecast_end_point + city_query + days_query + \
                     units_query + appid_query
-        return ujson.loads(requests.get(end_point).text)
+        return {"json": ujson.loads(requests.get(end_point).text),
+                "days": days,
+                "units": units}
