@@ -1,45 +1,40 @@
 from oweather_api_wrapper import OpenWeatherMapAPIWrapper
 
 class OpenWeatherMapAPIParser:
-  def __init__(self, api_key):
-    self.api_wrapper = OpenWeatherMapAPIWrapper(api_key)
-
-  def parse_current_weather(self, city):
+  def parse_current_weather(self, json):
     try:
-      weather_json = self.api_wrapper.get_current_weather_by_city_name(city)
       weather_dict = {}
-      weather_dict["city"] = weather_json["name"]
+      weather_dict["city"] = json["name"]
     except:
       print "Unknown city"
       return
-    weather_dict["country"] = weather_json["sys"]["country"]
-    weather_dict["dt"] = weather_json["dt"]
-    weather_dict["humidity"] = weather_json["main"]["humidity"]
-    weather_dict["pressure"] = weather_json["main"]["pressure"]
-    weather_dict["temp"] = weather_json["main"]["temp"]
-    weather_dict["weather_main"] = weather_json["weather"][0]["main"]
-    weather_dict["weather_desc"] = weather_json["weather"][0]["description"]
-    weather_dict["wind_deg"] = weather_json["wind"]["deg"]
-    weather_dict["wind_speed"] = weather_json["wind"]["speed"]
-    weather_dict["clouds_perc"] = weather_json["clouds"]["all"]
+    weather_dict["country"] = json["sys"]["country"]
+    weather_dict["dt"] = json["dt"]
+    weather_dict["humidity"] = json["main"]["humidity"]
+    weather_dict["pressure"] = json["main"]["pressure"]
+    weather_dict["temp"] = json["main"]["temp"]
+    weather_dict["weather_main"] = json["weather"][0]["main"]
+    weather_dict["weather_desc"] = json["weather"][0]["description"]
+    weather_dict["wind_deg"] = json["wind"]["deg"]
+    weather_dict["wind_speed"] = json["wind"]["speed"]
+    weather_dict["clouds_perc"] = json["clouds"]["all"]
     weather_dict["rain_volume"] = None
     weather_dict["snow_volume"] = None
     if weather_dict["weather_main"] == "Rain":
-      weather_dict["rain_volume"] = weather_json["rain"]["3h"]
+      weather_dict["rain_volume"] = json["rain"]["3h"]
     elif weather_dict["weather_main"] == "Snow":
-      weather_dict["snow_volume"] = weather_json["snow"]["3h"]
+      weather_dict["snow_volume"] = json["snow"]["3h"]
     return weather_dict
 
-  def parse_five_day_three_hour_forecast(self, city):
+  def parse_five_day_three_hour_forecast(self, json):
     try:
-      weather_json = self.api_wrapper.get_five_day_three_hour_forecast_by_city_name(city)
-      city = weather_json["city"]["name"]
+      city = json["city"]["name"]
     except:
       print "Unknown city"
       return
-    country = weather_json["city"]["country"]
+    country = json["city"]["country"]
     weather_list = [{"city": city, "country": country}]
-    for weather in weather_json["list"]:
+    for weather in json["list"]:
       weather_dict = {}
       weather_dict["dt"] = weather["dt"]
       weather_dict["dt_txt"] = weather["dt_txt"]
@@ -60,16 +55,15 @@ class OpenWeatherMapAPIParser:
       weather_list.append(weather_dict)
     return weather_list
 
-  def parse_daily_forecast(self, city, days):
+  def parse_daily_forecast(self, json):
     try:
-      weather_json = self.api_wrapper.get_daily_forecast_by_city_name(city, days)
-      city = weather_json["city"]["name"]
+      city = json["city"]["name"]
     except:
       print "Unknown city"
       return
-    country = weather_json["city"]["country"]
+    country = json["city"]["country"]
     weather_list = [{"city": city, "country": country}]
-    for weather in weather_json["list"]:
+    for weather in json["list"]:
       weather_dict = {}
       weather_dict["dt"] = weather["dt"]
       weather_dict["temp_day"] = weather["temp"]["day"]

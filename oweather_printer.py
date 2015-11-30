@@ -4,38 +4,33 @@ from prettytable import PrettyTable
 import datetime
 
 class OpenWeatherMapPrinter:
-  def __init__(self, api_key):
-    self.parser = OpenWeatherMapAPIParser(api_key)
-
-  def print_current_weather(self, city):
-    current_weather = self.parser.parse_current_weather(city)
-    print "Location:\t", current_weather["city"], ", ", \
-          current_weather["country"]
-    print "Condition:\t", current_weather["weather_main"], ", ", \
-          current_weather["weather_desc"]
+  def print_current_weather(self, weather_dict):
+    print "Location:\t", weather_dict["city"], ", ", \
+          weather_dict["country"]
+    print "Condition:\t", weather_dict["weather_main"], ", ", \
+          weather_dict["weather_desc"]
     table = PrettyTable(["Variable", "Measurement", "Unit"])
     table.align["Variable"] = "l"
-    table.add_row(["Temperature", current_weather["temp"], "Kelvin"])
-    table.add_row(["Humidity", current_weather["humidity"], "%"])
-    table.add_row(["Pressure", current_weather["pressure"], "hPa"])
-    table.add_row(["Wind Speed", current_weather["wind_speed"], "meter/sec"])
-    table.add_row(["Wind Direction", current_weather["wind_deg"], ""])
-    table.add_row(["Clouds", current_weather["clouds_perc"], "%"])
-    if current_weather["rain_volume"] is None:
+    table.add_row(["Temperature", weather_dict["temp"], "Kelvin"])
+    table.add_row(["Humidity", weather_dict["humidity"], "%"])
+    table.add_row(["Pressure", weather_dict["pressure"], "hPa"])
+    table.add_row(["Wind Speed", weather_dict["wind_speed"], "meter/sec"])
+    table.add_row(["Wind Direction", weather_dict["wind_deg"], ""])
+    table.add_row(["Clouds", weather_dict["clouds_perc"], "%"])
+    if weather_dict["rain_volume"] is None:
       table.add_row(["Rain Volume", 0, "mm"])
     else:
-      table.add_row(["Rain Volume", current_weather["rain_volume"], "mm"])
-    if current_weather["snow_volume"] is None:
+      table.add_row(["Rain Volume", weather_dict["rain_volume"], "mm"])
+    if weather_dict["snow_volume"] is None:
       table.add_row(["Snow Volume", 0, "mm"])
     else:
-      table.add_row(["Snow Volume", current_weather["snow_volume"], "mm"])
+      table.add_row(["Snow Volume", weather_dict["snow_volume"], "mm"])
     print table
     print "Last Updated (Local):\t", \
-          self.convert_utc_to_datetime(current_weather["dt"])
+          self.convert_utc_to_datetime(weather_dict["dt"])
     print
 
-  def print_five_day_three_hour_forecast(self, city):
-    forecast_list = self.parser.parse_five_day_three_hour_forecast(city)
+  def print_five_day_three_hour_forecast(self, forecast_list):
     city, country = forecast_list[0]["city"], forecast_list[0]["country"]
     for forecast in forecast_list[1:]:
       print "Location:\t", city, ", ", country
@@ -62,8 +57,7 @@ class OpenWeatherMapPrinter:
       print "Last Updated (UTC):\t", forecast["dt_txt"]
       print
 
-  def print_daily_forcast(self, city, days):
-    forecast_list = self.parser.parse_daily_forecast(city, days)
+  def print_daily_forcast(self, forecast_list):
     city, country = forecast_list[0]["city"], forecast_list[0]["country"]
     for forecast in forecast_list[1:]:
       print "Location:\t", city, ", ", country
