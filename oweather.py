@@ -4,32 +4,32 @@ from argparse import ArgumentParser
 from oweather_api_wrapper import OpenWeatherMapAPIWrapper
 from oweather_api_parser import OpenWeatherMapAPIParser
 from oweather_printer import OpenWeatherMapPrinter
+import os.path
+import ipdb
+import sys
 
 class OpenWeatherMap:
     def __init__(self):
         self.args = self.process_arguments()
-        self.wrapper = OpenWeatherMapAPIWrapper(self.get_api_key())
+        self.wrapper = OpenWeatherMapAPIWrapper(self.get_api_token())
         self.parser = OpenWeatherMapAPIParser()
         self.printer = OpenWeatherMapPrinter()
 
     def process_arguments(self):
-        parser = ArgumentParser(description="Display weather information on " +
-                                "the command line using Open Weather Map API")
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="%(prog)s 0.0.1")
-        key_group = parser.add_mutually_exclusive_group(required=True)
-        key_group.add_argument(
+        parser = ArgumentParser(
+            description="Display weather information on the command line " +
+            "using Open Weather Map API")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="%(prog)s 0.0.1")
+        parser.add_argument(
             "-k",
-            dest="token",
+            dest="api_token",
             type=str,
+            default=None,
             help="connect to open weather map using API key token")
-        key_group.add_argument(
-            "-K",
-            dest="file",
-            type=argparse.FileType("r"),
-            help="connect to  open weather map using API key file")
         forecast_group = parser.add_mutually_exclusive_group(required=False)
         forecast_group.add_argument(
             "-f",
@@ -75,14 +75,35 @@ class OpenWeatherMap:
                                              % days)
         return d
 
-    def get_api_key(self):
-        if self.args.token is not None:
-            return self.args.token
-        elif self.args.file is not None:
-            for line in self.args.file.readlines():
+    def get_api_token(self):
+        if self.args.api_token is None:
+            try:
+                return self.get_rc_configs()["api_key"]
+            except:
+                print "api key is not set in .oweatherrc file"
+                sys.exit(1)
+        else:
+            return self.args.api_token
+
+    def get_rc_configs(self):
+        try:
+            if os.path.isfile("./.oweatherrc"):
+                return self.read_rc_configs_from_file("./.oweatherrc")
+            elif os.path.isfile("~/.oweatherrc"):
+                return self.read_rc_configs_from_file("~/.oweatherrc")
+            else:
+                raise IOError
+        except IOError:
+            print ".oweatherrc file does not exist"
+            sys.exit(1)
+
+    def read_rc_configs_from_file(self, file_path):
+        rc_configs = {}
+        with open(file_path) as f:
+            for line in f:
                 key, value = line.partition("=")[::2]
-                if key.strip() == "oweather_api_key":
-                    return value.strip()[1:-1]
+                rc_configs[key.strip()] = value.strip()[1:-1]
+        return rc_configs
 
     def get_weather(self):
         if self.args.forecast is True:
