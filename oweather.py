@@ -21,7 +21,7 @@ def process_arguments():
       "--days",
       dest="n",
       type=check_days,
-      help="N days weather forcast (N <= 16)")
+      help="N days weather forcast (N >= 16)")
   key_group = parser.add_mutually_exclusive_group(required=True)
   key_group.add_argument(
       "-k",
