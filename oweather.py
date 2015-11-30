@@ -15,6 +15,10 @@ class OpenWeatherMap:
     def process_arguments(self):
         parser = ArgumentParser(description="Display weather information on " +
                                 "the command line using Open Weather Map API")
+        parser.add_argument("-v",
+                            "--version",
+                            action="version",
+                            version="%(prog)s 0.0.1")
         key_group = parser.add_mutually_exclusive_group(required=True)
         key_group.add_argument(
             "-k",
