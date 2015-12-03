@@ -1,6 +1,7 @@
 import sys
 import ujson
 import requests
+import json as jjson
 
 class OpenWeatherMapModel:
     def __init__(self, api_key):
@@ -58,3 +59,6 @@ class OpenWeatherMapModel:
             sys.exit("Network Error")
         except ValueError:
             sys.exit("Invalid API Key")
+
+    def print_json(self, json):
+        print jjson.dumps(json, indent=4, sort_keys=True)
