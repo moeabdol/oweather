@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import argparse
 from argparse import ArgumentParser
-from oweather_api_wrapper import OpenWeatherMapAPIWrapper
-from oweather_api_parser import OpenWeatherMapAPIParser
-from oweather_printer import OpenWeatherMapPrinter
+from oweather_model import OpenWeatherMapModel
+from oweather_controller import OpenWeatherMapController
+from oweather_view import OpenWeatherMapView
 import os.path
 import ipdb
 import sys
@@ -11,9 +11,9 @@ import sys
 class OpenWeatherMap:
     def __init__(self):
         self.args = self.process_arguments()
-        self.wrapper = OpenWeatherMapAPIWrapper(self.get_api_token())
-        self.parser = OpenWeatherMapAPIParser()
-        self.printer = OpenWeatherMapPrinter()
+        self.wrapper = OpenWeatherMapModel(self.get_api_token())
+        self.parser = OpenWeatherMapController()
+        self.printer = OpenWeatherMapView()
 
     def process_arguments(self):
         parser = ArgumentParser(
@@ -109,17 +109,17 @@ class OpenWeatherMap:
         if self.args.forecast is True:
             self.printer.print_five_day_three_hour_forecast(
                 self.parser.parse_five_day_three_hour_forecast(
-                    self.wrapper.get_five_day_three_hour_forecast_by_city_name(
+                    self.wrapper.get_five_day_three_hour_forecast(
                         self.args.city[0], self.args.units)))
         elif self.args.n > 0:
             self.printer.print_daily_forcast(
                 self.parser.parse_daily_forecast(
-                    self.wrapper.get_daily_forecast_by_city_name(
+                    self.wrapper.get_daily_forecast(
                         self.args.city[0], self.args.n, self.args.units)))
         else:
             self.printer.print_current_weather(
                 self.parser.parse_current_weather(
-                    self.wrapper.get_current_weather_by_city_name(
+                    self.wrapper.get_current_weather(
                         self.args.city[0], self.args.units)))
 
 if __name__ == "__main__":
