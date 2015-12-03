@@ -20,7 +20,7 @@ class OpenWeatherMapModel:
         api_end_point = self.current_weather_api_end_point + c + u + aid
         try:
             json = ujson.loads(requests.get(api_end_point).text)
-            if json["cod"] == 404:
+            if int(json["cod"]) == 404:
                 sys.exit("City not found")
             return {"json": json, "units": units}
         except requests.exceptions.ConnectionError:
@@ -36,7 +36,7 @@ class OpenWeatherMapModel:
                         c + u + aid
         try:
             json = ujson.loads(requests.get(api_end_point).text)
-            if json["cod"] == 404:
+            if int(json["cod"]) == 404:
                 sys.exit("City not found")
             return {"json": json, "units": units}
         except requests.exceptions.ConnectionError:
@@ -52,7 +52,7 @@ class OpenWeatherMapModel:
         api_end_point = self.daily_forecast_api_end_point + c + d + u + aid
         try:
             json = ujson.loads(requests.get(api_end_point).text)
-            if json["cod"] == 404:
+            if int(json["cod"]) == 404:
                 sys.exit("City not found")
             return {"json": json, "units": units, "days": days}
         except requests.exceptions.ConnectionError:
