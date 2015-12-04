@@ -190,6 +190,4 @@ class OpenWeatherMapView:
     #     print json.dumps(json_dict, sort_keys=True, indent=4,
     #                      separators=(",", ": "))
 
-    def convert_utc_to_datetime(self, utc_time):
-        return datetime.datetime.fromtimestamp(int(utc_time)).strftime(
-            "%Y-%m-%d %H:%M:%S")
+
