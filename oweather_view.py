@@ -1,4 +1,3 @@
-# import json
 from oweather_controller import OpenWeatherMapController
 from prettytable import PrettyTable
 import datetime
@@ -185,9 +184,3 @@ class OpenWeatherMapView:
                         str(json["snow_volume"]) + " mm"])
             print table
             print
-
-    # def print_json(self, json_dict):
-    #     print json.dumps(json_dict, sort_keys=True, indent=4,
-    #                      separators=(",", ": "))
-
-

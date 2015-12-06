@@ -25,7 +25,7 @@ class OpenWeatherMapModel:
                 sys.exit("City not found")
             data = {"json": json, "units": units}
             parsed_data = self.parse_current_weather(data)
-            # self.print_json(parsed_data)
+            self.print_json(parsed_data)
             return parsed_data
         except requests.exceptions.ConnectionError:
             sys.exit("Network error")
@@ -59,7 +59,6 @@ class OpenWeatherMapModel:
         _dict["weather_desc"] = json["weather"][0]["description"]
         _dict["wind_deg"] = json["wind"]["deg"]
         _dict["wind_speed"] = json["wind"]["speed"]
-        _dict["wind_gust"] = json["wind"]["gust"]
         _dict["clouds_perc"] = json["clouds"]["all"]
         if "sea_level" in json["main"]:
             _dict["sea_level"] = json["main"]["sea_level"]
@@ -69,6 +68,8 @@ class OpenWeatherMapModel:
             _dict["rain_volume"] = json["rain"]["3h"]
         if "snow" in json:
             _dict["snow_volume"] = json["snow"]["3h"]
+        if "gust" in json["wind"]:
+            _dict["gust"] = json["wind"]["gust"]
         return _dict
 
     def get_five_day_three_hour_forecast(self, city, units):
@@ -143,7 +144,7 @@ class OpenWeatherMapModel:
                 sys.exit("City not found")
             data = {"json": json, "units": units, "days": days}
             parsed_data = self.parse_daily_forecast(data)
-            self.print_json(parsed_data)
+            # self.print_json(parsed_data)
             return parsed_data
         except requests.exceptions.ConnectionError:
             sys.exit("Network Error")
