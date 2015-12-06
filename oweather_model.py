@@ -105,9 +105,9 @@ class OpenWeatherMapModel:
         for obj in json["list"]:
             weather = {}
             weather["dt"] = obj["dt"]
-            weather["dt_forcasted_local"] = \
+            weather["dt_forecasted_local"] = \
                 self.convert_timestamp_to_local_datetime(obj["dt"])
-            weather["dt_forcasted_utc"] = \
+            weather["dt_forecasted_utc"] = \
                 self.convert_timestamp_to_utc_datetime(obj["dt"])
             weather["dt_txt"] = obj["dt_txt"]
             weather["humidity"] = obj["main"]["humidity"]
@@ -166,9 +166,9 @@ class OpenWeatherMapModel:
         for obj in json["list"]:
             weather = {}
             weather["dt"] = obj["dt"]
-            weather["dt_forcasted_local"] = \
+            weather["dt_forecasted_local"] = \
                 self.convert_timestamp_to_local_datetime(obj["dt"])
-            weather["dt_forcasted_utc"] = \
+            weather["dt_forecasted_utc"] = \
                 self.convert_timestamp_to_utc_datetime(obj["dt"])
             weather["temp_day"] = obj["temp"]["day"]
             weather["temp_min"] = obj["temp"]["min"]

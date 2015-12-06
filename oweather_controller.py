@@ -3,6 +3,7 @@ import os.path
 import argparse
 from argparse import ArgumentParser
 from oweather_model import OpenWeatherMapModel
+from oweather_view import OpenWeatherMapView
 
 class OpenWeatherMapController:
     def __init__(self):
@@ -101,4 +102,12 @@ class OpenWeatherMapController:
 
 if __name__ == "__main__":
     owc = OpenWeatherMapController()
-    owc.model.get_daily_forecast(owc.args.city[0], 7, owc.args.units)
+    v = OpenWeatherMapView()
+    # v.print_current_weather(
+    #     owc.model.get_current_weather(owc.args.city[0], owc.args.units))
+    # v.print_five_day_three_hour_forecast(
+    #     owc.model.get_five_day_three_hour_forecast(
+    #         owc.args.city[0], owc.args.units))
+    v.print_daily_forcast(
+        owc.model.get_daily_forecast(
+            owc.args.city[0], 7, owc.args.units))

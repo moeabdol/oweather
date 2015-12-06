@@ -1,4 +1,4 @@
-from oweather_controller import OpenWeatherMapController
+# from oweather_controller import OpenWeatherMapController
 from prettytable import PrettyTable
 import datetime
 import ipdb
@@ -9,8 +9,7 @@ class OpenWeatherMapView:
         print "Location:\t\t%s, %s" % (data["city"], data["country"])
         print "Condition:\t\t%s, %s" % (data["weather_main"],
             data["weather_desc"])
-        print "Last Updated (Local):\t%s" % \
-            self.convert_utc_to_datetime(data["dt"])
+        print "Last Updated (Local):\t%s" % data["dt_local"]
         table = PrettyTable(["Variable", "Measurement"])
         table.align["Variable"] = "l"
         if data["units"] == "metric":
@@ -22,16 +21,6 @@ class OpenWeatherMapView:
             table.add_row(["Wind Direction", str(data["wind_deg"]) +
                                                          u"\xB0"])
             table.add_row(["Clouds", str(data["clouds_perc"]) + "%"])
-            if data["rain_volume"] is None:
-                table.add_row(["Rain Volume", "0 mm"])
-            else:
-                table.add_row(["Rain Volume", str(data["rain_volume"]) +
-                                                          " mm"])
-            if data["snow_volume"] is None:
-                table.add_row(["Snow Volume", "0 mm"])
-            else:
-                table.add_row(["Snow Volume", str(data["snow_volume"]) +
-                                                          " mm"])
         elif data["units"] == "imperial":
             table.add_row(["Temperature", str(data["temp"]) + u"\xB0" + "F"])
             table.add_row(["Humidity", str(data["humidity"]) + "%"])
@@ -41,16 +30,16 @@ class OpenWeatherMapView:
             table.add_row(["Wind Direction", str(data["wind_deg"]) +
                                                          u"\xB0"])
             table.add_row(["Clouds", str(data["clouds_perc"]) + "%"])
-            if data["rain_volume"] is None:
-                table.add_row(["Rain Volume", "0 mm"])
-            else:
-                table.add_row(["Rain Volume", str(data["rain_volume"]) +
-                                                          " mm"])
-            if data["snow_volume"] is None:
-                table.add_row(["Snow Volume", "0 mm"])
-            else:
-                table.add_row(["Snow Volume", str(data["snow_volume"]) +
-                                                          " mm"])
+        if "rain_volume" in data:
+            table.add_row(["Rain Volume", str(data["rain_volume"]) +
+                                                        " mm"])
+        else:
+            table.add_row(["Rain Volume", "0 mm"])
+        if "snow_volume" in data:
+            table.add_row(["Snow Volume", str(data["snow_volume"]) +
+                                                        " mm"])
+        else:
+            table.add_row(["Snow Volume", "0 mm"])
         print table
         print
 
@@ -62,8 +51,8 @@ class OpenWeatherMapView:
             print "Location:\t\t{}, {}".format(city, country)
             print "Condition:\t\t{}, {}".format(json["weather_main"],
                 json["weather_desc"])
-            print "Local Forecast Datetime:%s" % \
-                self.convert_utc_to_datetime(json["dt"])
+            print "Local Forecast Datetime:%s" % json["dt_forecasted_local"]
+            print "UTC Forecast Datetime:%s" % json["dt_forecasted_utc"]
             print "UTC Forecast Datetime:\t%s" % json["dt_txt"]
             table = PrettyTable(["Variable", "Measurement"])
             table.align["Variable"] = "l"
@@ -77,16 +66,6 @@ class OpenWeatherMapView:
                 table.add_row(["Wind Direction", str(json["wind_deg"]) +
                                                               u"\xB0"])
                 table.add_row(["Clouds", str(json["clouds_perc"]) + "%"])
-                if json["rain_volume"] is None:
-                    table.add_row(["Rain Volume", "0 mm"])
-                else:
-                    table.add_row(["Rain Volume", str(json["rain_volume"]) +
-                                                               " mm"])
-                if json["snow_volume"] is None:
-                    table.add_row(["Snow Volume", "0 mm"])
-                else:
-                    table.add_row(["Snow Volume", str(json["snow_volume"]) +
-                                                               " mm"])
             elif units == "imperial":
                 table.add_row(["Temperature", str(json["temp"]) + u"\xB0" +
                                                                        "F"])
@@ -97,16 +76,16 @@ class OpenWeatherMapView:
                 table.add_row(["Wind Direction", str(json["wind_deg"]) +
                                                               u"\xB0"])
                 table.add_row(["Clouds", str(json["clouds_perc"]) + "%"])
-                if json["rain_volume"] is None:
-                    table.add_row(["Rain Volume", "0 mm"])
-                else:
-                    table.add_row(["Rain Volume", str(json["rain_volume"]) +
-                                                               " mm"])
-                if json["snow_volume"] is None:
-                    table.add_row(["Snow Volume", "0 mm"])
-                else:
-                    table.add_row(["Snow Volume", str(json["snow_volume"]) +
-                                                               " mm"])
+            if "rain_volume" in json:
+                table.add_row(["Rain Volume", str(json["rain_volume"]) +
+                                                            " mm"])
+            else:
+                table.add_row(["Rain Volume", "0 mm"])
+            if "snow_volume" in json:
+                table.add_row(["Snow Volume", str(json["snow_volume"]) +
+                                                            " mm"])
+            else:
+                table.add_row(["Snow Volume", "0 mm"])
             print table
             print
 
@@ -119,7 +98,9 @@ class OpenWeatherMapView:
             print "Condition:\t\t{}, {}".format(json["weather_main"],
                 json["weather_desc"])
             print "Local Forecast Datetime:{}".format(
-                self.convert_utc_to_datetime(json["dt"]))
+                json["dt_forecasted_local"])
+            print "UTC Forecast Datetime:{}".format(
+                json["dt_forecasted_utc"])
             table = PrettyTable(["Variable", "Measurement"])
             table.align["Variable"] = "l"
             if units == "metric":
@@ -142,16 +123,6 @@ class OpenWeatherMapView:
                 table.add_row(["Wind Direction",
                     str(json["wind_deg"]) + u"\xB0"])
                 table.add_row(["Clouds", str(json["clouds_perc"]) + "%"])
-                if json["rain_volume"] is None:
-                    table.add_row(["Rain Volume", "0 mm"])
-                else:
-                    table.add_row(["Rain Volume",
-                        str(json["rain_volume"]) + " mm"])
-                if json["snow_volume"] is None:
-                    table.add_row(["Snow Volume", "0 mm"])
-                else:
-                    table.add_row(["Snow Volume",
-                        str(json["snow_volume"]) + " mm"])
             elif units == "imperial":
                 table.add_row(["Temperature (Morning)",
                     str(json["temp_morn"]) + u"\xB0" + "F"])
@@ -172,15 +143,15 @@ class OpenWeatherMapView:
                 table.add_row(["Wind Direction",
                     str(json["wind_deg"]) + u"\xB0"])
                 table.add_row(["Clouds", str(json["clouds_perc"]) + "%"])
-                if json["rain_volume"] is None:
-                    table.add_row(["Rain Volume", "0 mm"])
-                else:
-                    table.add_row(["Rain Volume",
-                        str(json["rain_volume"]) + " mm"])
-                if json["snow_volume"] is None:
-                    table.add_row(["Snow Volume", "0 mm"])
-                else:
-                    table.add_row(["Snow Volume",
-                        str(json["snow_volume"]) + " mm"])
+            if "rain_volume" in json:
+                table.add_row(["Rain Volume",
+                    str(json["rain_volume"]) + " mm"])
+            else:
+                table.add_row(["Rain Volume", "0 mm"])
+            if "snow_volume" in json:
+                table.add_row(["Snow Volume",
+                    str(json["snow_volume"]) + " mm"])
+            else:
+                table.add_row(["Snow Volume", "0 mm"])
             print table
             print
