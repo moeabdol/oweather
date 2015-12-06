@@ -1,5 +1,5 @@
 # import json
-from oweather_api_parser import OpenWeatherMapController
+from oweather_controller import OpenWeatherMapController
 from prettytable import PrettyTable
 import datetime
 import ipdb

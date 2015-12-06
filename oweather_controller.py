@@ -1,4 +1,4 @@
-from oweather_api_wrapper import OpenWeatherMapModel
+from oweather_model import OpenWeatherMapModel
 
 class OpenWeatherMapController:
     def parse_current_weather(self, data):

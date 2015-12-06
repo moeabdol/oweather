@@ -11,9 +11,9 @@ import sys
 class OpenWeatherMap:
     def __init__(self):
         self.args = self.process_arguments()
-        self.wrapper = OpenWeatherMapModel(self.get_api_token())
-        self.parser = OpenWeatherMapController()
-        self.printer = OpenWeatherMapView()
+        self.model = OpenWeatherMapModel(self.get_api_token())
+        # self.controller = OpenWeatherMapController()
+        # self.view = OpenWeatherMapView()
 
     def process_arguments(self):
         parser = ArgumentParser(
@@ -123,5 +123,7 @@ class OpenWeatherMap:
                         self.args.city[0], self.args.units)))
 
 if __name__ == "__main__":
-    oweather = OpenWeatherMap()
-    oweather.get_weather()
+    ow = OpenWeatherMap()
+    # ow.model.get_current_weather(ow.args.city[0], ow.args.units)
+    # ow.model.get_five_day_three_hour_forecast(ow.args.city[0], ow.args.units)
+    ow.model.get_daily_forecast(ow.args.city[0], 16, ow.args.units)

@@ -25,7 +25,7 @@ class OpenWeatherMapModel:
                 sys.exit("City not found")
             data = {"json": json, "units": units}
             parsed_data = self.parse_current_weather(data)
-            self.print_json(parsed_data)
+            # self.print_json(parsed_data)
             return parsed_data
         except requests.exceptions.ConnectionError:
             sys.exit("Network error")
@@ -59,6 +59,7 @@ class OpenWeatherMapModel:
         _dict["weather_desc"] = json["weather"][0]["description"]
         _dict["wind_deg"] = json["wind"]["deg"]
         _dict["wind_speed"] = json["wind"]["speed"]
+        _dict["wind_gust"] = json["wind"]["gust"]
         _dict["clouds_perc"] = json["clouds"]["all"]
         if "sea_level" in json["main"]:
             _dict["sea_level"] = json["main"]["sea_level"]
@@ -80,7 +81,10 @@ class OpenWeatherMapModel:
             json = ujson.loads(requests.get(api_end_point).text)
             if int(json["cod"]) == 404:
                 sys.exit("City not found")
-            return {"json": json, "units": units}
+            data = {"json": json, "units": units}
+            parsed_data = self.parse_five_day_three_hour_forecast(data)
+            # self.print_json(parsed_data)
+            return parsed_data
         except requests.exceptions.ConnectionError:
             sys.exit("Network Error")
         except ValueError:
@@ -88,18 +92,18 @@ class OpenWeatherMapModel:
 
     def parse_five_day_three_hour_forecast(self, data):
         json = data["json"]
-        units = data["units"]
         _dict = {}
         _dict["city_id"] = json["city"]["id"]
         _dict["city"] = json["city"]["name"]
         _dict["country"] = json["city"]["country"]
-        _dict["units"] = units
+        _dict["units"] = data["units"]
         _dict["coord_lon"] = json["city"]["coord"]["lon"]
         _dict["coord_lat"] = json["city"]["coord"]["lat"]
         _dict["cnt"] = json["cnt"]
         _list = []
         for obj in json["list"]:
             weather = {}
+            weather["dt"] = obj["dt"]
             weather["dt_forcasted_local"] = \
                 self.convert_timestamp_to_local_datetime(obj["dt"])
             weather["dt_forcasted_utc"] = \
@@ -107,7 +111,13 @@ class OpenWeatherMapModel:
             weather["dt_txt"] = obj["dt_txt"]
             weather["humidity"] = obj["main"]["humidity"]
             weather["pressure"] = obj["main"]["pressure"]
+            weather["sea_level"] = obj["main"]["sea_level"]
+            weather["grnd_level"] = obj["main"]["grnd_level"]
             weather["temp"] = obj["main"]["temp"]
+            weather["temp_min"] = obj["main"]["temp_min"]
+            weather["temp_max"] = obj["main"]["temp_max"]
+            weather["weather_id"] = obj["weather"][0]["id"]
+            weather["weather_icon"] = obj["weather"][0]["icon"]
             weather["weather_main"] = obj["weather"][0]["main"]
             weather["weather_desc"] = obj["weather"][0]["description"]
             weather["wind_deg"] = obj["wind"]["deg"]
@@ -131,11 +141,60 @@ class OpenWeatherMapModel:
             json = ujson.loads(requests.get(api_end_point).text)
             if int(json["cod"]) == 404:
                 sys.exit("City not found")
-            return {"json": json, "units": units, "days": days}
+            data = {"json": json, "units": units, "days": days}
+            parsed_data = self.parse_daily_forecast(data)
+            self.print_json(parsed_data)
+            return parsed_data
         except requests.exceptions.ConnectionError:
             sys.exit("Network Error")
         except ValueError:
             sys.exit("Invalid API Key")
+
+    def parse_daily_forecast(self, data):
+        json = data["json"]
+        _dict = {}
+        _dict["city_id"] = json["city"]["id"]
+        _dict["city"] = json["city"]["name"]
+        _dict["country"] = json["city"]["country"]
+        _dict["units"] = data["units"]
+        _dict["days"] = data["days"]
+        _dict["coord_lon"] = json["city"]["coord"]["lon"]
+        _dict["coord_lat"] = json["city"]["coord"]["lat"]
+        _dict["cnt"] = json["cnt"]
+        _list = []
+        for obj in json["list"]:
+            weather = {}
+            weather["dt"] = obj["dt"]
+            weather["dt_forcasted_local"] = \
+                self.convert_timestamp_to_local_datetime(obj["dt"])
+            weather["dt_forcasted_utc"] = \
+                self.convert_timestamp_to_utc_datetime(obj["dt"])
+            weather["temp_day"] = obj["temp"]["day"]
+            weather["temp_min"] = obj["temp"]["min"]
+            weather["temp_max"] = obj["temp"]["max"]
+            weather["temp_night"] = obj["temp"]["night"]
+            weather["temp_eve"] = obj["temp"]["eve"]
+            weather["temp_morn"] = obj["temp"]["morn"]
+            weather["pressure"] = obj["pressure"]
+            weather["humidity"] = obj["humidity"]
+            weather["weather_id"] = obj["weather"][0]["id"]
+            weather["weather_icon"] = obj["weather"][0]["icon"]
+            weather["weather_main"] = obj["weather"][0]["main"]
+            weather["weather_desc"] = obj["weather"][0]["description"]
+            weather["wind_speed"] = obj["speed"]
+            weather["wind_deg"] = obj["deg"]
+            weather["clouds_perc"] = obj["clouds"]
+            weather["rain_volume"] = None
+            weather["snow_volume"] = None
+            if "rain" in obj:
+                weather["rain_volume"] = obj["rain"]
+            if "snow" in obj:
+                weather["snow_volume"] = obj["snow"]
+            if "gust" in obj:
+                weather["wind_gust"] = obj["gust"]
+            _list.append(weather)
+        _dict["list"] = _list
+        return _dict
 
     def print_json(self, json):
         print jjson.dumps(json, indent=4, sort_keys=True)
