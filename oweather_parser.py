@@ -164,12 +164,12 @@ class OpenWeatherParser(object):
         _dict["list"] = _list
         return _dict
 
-    def convert_timestamp_to_local_datetime(self, utc_time):
-        return datetime.fromtimestamp(int(utc_time)).strftime(
+    def convert_timestamp_to_local_datetime(self, timestamp):
+        return datetime.fromtimestamp(int(timestamp)).strftime(
             "%Y-%m-%d %H:%M:%S")
 
-    def convert_timestamp_to_utc_datetime(self, utc_time):
-        return datetime.utcfromtimestamp(int(utc_time)).strftime(
+    def convert_timestamp_to_utc_datetime(self, timestamp):
+        return datetime.utcfromtimestamp(int(timestamp)).strftime(
             "%Y-%m-%d %H:%M:%S")
 
 # if __name__ == "__main__":
