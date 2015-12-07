@@ -111,4 +111,6 @@ if __name__ == "__main__":
     # v.print_daily_forcast(
     #     owc.model.get_daily_forecast(
     #         owc.args.city[0], 7, owc.args.units))
-    owc.model.get_current_weather(owc.args.city[0], owc.args.units)
+    # owc.model.get_current_weather(owc.args.city[0], owc.args.units)
+    # owc.model.get_five_day_three_hour_forecast(owc.args.city[0], owc.args.units)
+    owc.model.get_daily_forecast(owc.args.city[0], 7, owc.args.units)
