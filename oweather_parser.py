@@ -72,10 +72,12 @@ class OpenWeatherParser(object):
 
     def parse_five_day_forecast(self, data):
         json    = data["json"]
-        units   = data["units"].capitalize()
+        units   = data["units"]
+        tsign   = self.temp_sign(units)
+        ssign   = self.speed_metric(units)
         no_info = "No information available!"
         _dict = {}
-        _dict["Units"] = units
+        _dict["Units"] = units.capitalize()
         if "city" in json:
             city = json["city"]
             _dict["City ID"] = str(city.get("id",   no_info))
@@ -83,7 +85,7 @@ class OpenWeatherParser(object):
             _dict["Country"] = city.get("country",  no_info)
             if "coord" in city:
                 coord = city["coord"]
-                _dict["Longitude"] = str(coord.get("lon", no_info))
+                _dict["Longitude"]  = str(coord.get("lon", no_info))
                 _dict["Latitude"]   = str(coord.get("lat", no_info))
         _list = []
         for obj in json["list"]:
@@ -95,13 +97,23 @@ class OpenWeatherParser(object):
             weather["Datetime Text (UTC)"] = obj["dt_txt"]
             if "main" in obj:
                 main = obj["main"]
-                weather["Humidity"]         = str(main.get("humidity", no_info))
-                weather["Pressure"]         = str(main.get("pressure", no_info))
-                weather["Sea Level"]       = str(main.get("sea_level", no_info))
-                weather["Ground Level"]   = str(main.get("grnd_level", no_info))
-                weather["Temperature"]       =    str(main.get("temp", no_info))
-                weather["Temperature (Min)"] = str(main.get("temp_min",no_info))
-                weather["Temperature (Max)"] = str(main.get("temp_max",no_info))
+                weather["Humidity"] = str(main.get("humidity", no_info)) + "%"
+                weather["Pressure"] = str(main.get("pressure", no_info)) + \
+                    " hPa"
+                weather["Pressure (sea)"] = \
+                    str(main.get("sea_level", no_info))
+                weather["Pressure (ground)"] = \
+                    str(main.get("grnd_level", no_info))
+                if weather["Pressure (sea)"] != no_info:
+                    weather["Pressure (sea)"] += " hPa"
+                if weather["Pressure (ground)"] != no_info:
+                    weather["Pressure (ground)"] += " hPa"
+                weather["Temperature"] =    str(main.get("temp", no_info)) + \
+                    tsign
+                weather["Temperature (Min)"] = \
+                    str(main.get("temp_min",no_info)) + tsign
+                weather["Temperature (Max)"] = \
+                    str(main.get("temp_max",no_info)) + tsign
             if "weather" in obj and obj["weather"][0]:
                 wthr = obj["weather"][0]
                 weather["Weather ID"]          = str(wthr.get("id",    no_info))
@@ -111,15 +123,19 @@ class OpenWeatherParser(object):
                     no_info))
             if "wind" in obj:
                 wind = obj["wind"]
-                weather["Wind Direction"] = str(wind.get("deg",    no_info))
-                weather["Wind Speed"]     = str(wind.get("speed",  no_info))
+                weather["Wind Direction"] = str(wind.get("deg",    no_info)) + \
+                    u"\xb0"
+                weather["Wind Speed"]     = str(wind.get("speed",  no_info)) + \
+                    ssign
                 weather["Wind Gust"]      = str(wind.get("gust",   no_info))
             if "clouds" in obj:
-                weather["Clouds"] = str(obj["clouds"].get("all", no_info))
+                weather["Clouds"] = str(obj["clouds"].get("all", no_info)) + "%"
             if "rain" in obj:
-                weather["Rain Volume"] = str(obj["rain"].get("3h", no_info))
+                weather["Rain Volume"] = str(obj["rain"].get("3h", no_info)) + \
+                    " mm"
             if "snow" in obj:
-                weather["Snow Volume"] = str(obj["snow"].get("3h", no_info))
+                weather["Snow Volume"] = str(obj["snow"].get("3h", no_info)) + \
+                    " mm"
             _list.append(weather)
         _dict["list"] = _list
         return _dict
@@ -202,10 +218,10 @@ if __name__ == "__main__":
     key = "d0fc78d57e3d1d08f2a3241f8bc47d3c"
     wrpr = OpenWeatherWrapper(key)
     prsr = OpenWeatherParser()
-    json = wrpr.get_current_weather("yokohama", "imperial")
-    data = prsr.parse_current_weather(json)
-    # json = wrpr.get_five_day_forecast("tokyo", "metric")
-    # data = prsr.parse_five_day_forecast(json)
+    # json = wrpr.get_current_weather("yokohama", "imperial")
+    # data = prsr.parse_current_weather(json)
+    json = wrpr.get_five_day_forecast("tokyo", "metric")
+    data = prsr.parse_five_day_forecast(json)
     # json = wrpr.get_daily_forecast("tokyo", 4, "metric")
     # data = prsr.parse_daily_forecast(json)
     import json as jjson
