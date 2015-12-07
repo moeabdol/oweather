@@ -3,12 +3,14 @@ from datetime import datetime
 class OpenWeatherParser(object):
     def parse_current_weather(self, data):
         json    = data["json"]
-        units   = data["units"].capitalize()
+        units   = data["units"]
+        tsign   = self.temp_sign(units)
+        ssign   = self.speed_metric(units)
         no_info = "No information available!"
         _dict = {}
         _dict["City ID"] = str(json.get("id",  no_info))
         _dict["City"]    = json.get("name",    no_info)
-        _dict["Units"]   = units
+        _dict["Units"]   = units.capitalize()
         _dict["Last Updated (Local)"] = \
             self.convert_timestamp_to_local_datetime(json.get("dt", no_info))
         _dict["Last Updated (UTC)"] = \
@@ -28,17 +30,26 @@ class OpenWeatherParser(object):
                 self.convert_timestamp_to_utc_datetime(json["sys"].get(
                     "sunset", no_info))
         if "coord" in json:
-            _dict["Longtitude"] = str(json["coord"].get("lon", no_info))
+            _dict["Longitude"] = str(json["coord"].get("lon", no_info))
             _dict["Latitude"]   = str(json["coord"].get("lat", no_info))
         if "main" in json:
             main = json["main"]
-            _dict["Humidity"]          = str(main.get("humidity"   , no_info))
-            _dict["Pressure"]          = str(main.get("pressure"   , no_info))
-            _dict["Temperature"]       = str(main.get("temp"       , no_info))
-            _dict["Temperature (Min)"] = str(main.get("temp_min"   , no_info))
-            _dict["Temperature (Max)"] = str(main.get("temp_max"   , no_info))
-            _dict["Sea Level"]         = str(main.get("sea_level"  , no_info))
-            _dict["Ground Level"]      = str(main.get("grnd_level" , no_info))
+            _dict["Humidity"]          = str(main.get("humidity" , no_info)) + \
+                "%"
+            _dict["Pressure"]          = str(main.get("pressure" , no_info)) + \
+                " hPa"
+            _dict["Temperature"]       = str(main.get("temp"     , no_info)) + \
+                tsign
+            _dict["Temperature (Min)"] = str(main.get("temp_min" , no_info)) + \
+                tsign
+            _dict["Temperature (Max)"] = str(main.get("temp_max" , no_info)) + \
+                tsign
+            _dict["Pressure (sea)"]       = str(main.get("sea_level",  no_info))
+            _dict["Pressure (ground)"]    = str(main.get("grnd_level", no_info))
+            if _dict["Pressure (sea)"] != no_info:
+                _dict["Pressure (sea)"] += " hPa"
+            if _dict["Pressure (ground)"] != no_info:
+                _dict["Pressure (ground)"] += " hPa"
         if "weather" in json and json["weather"][0]:
             weather = json["weather"][0]
             _dict["Weather ID"]          = str(weather.get("id", no_info))
@@ -48,15 +59,15 @@ class OpenWeatherParser(object):
                 no_info))
         if "wind" in json:
             wind = json["wind"]
-            _dict["Wind Direction"] = str(wind.get("deg",    no_info))
-            _dict["Wind Speed"]     = str(wind.get("speed",  no_info))
+            _dict["Wind Direction"] = str(wind.get("deg",    no_info)) + u"\xb0"
+            _dict["Wind Speed"]     = str(wind.get("speed",  no_info)) + ssign
             _dict["Wind Gust"]      = str(wind.get("gust",   no_info))
         if "clouds" in json:
-            _dict["Clouds"] = str(json["clouds"].get("all", no_info))
+            _dict["Clouds"] = str(json["clouds"].get("all", no_info)) + "%"
         if "rain" in json:
-            _dict["Rain Volume"] = str(json["rain"].get("3h", no_info))
+            _dict["Rain Volume"] = str(json["rain"].get("3h", no_info)) + " mm"
         if "snow" in json:
-            _dict["Snow Volume"] = str(json["snow"].get("3h", no_info))
+            _dict["Snow Volume"] = str(json["snow"].get("3h", no_info)) + " mm"
         return _dict
 
     def parse_five_day_forecast(self, data):
@@ -72,7 +83,7 @@ class OpenWeatherParser(object):
             _dict["Country"] = city.get("country",  no_info)
             if "coord" in city:
                 coord = city["coord"]
-                _dict["Longtitude"] = str(coord.get("lon", no_info))
+                _dict["Longitude"] = str(coord.get("lon", no_info))
                 _dict["Latitude"]   = str(coord.get("lat", no_info))
         _list = []
         for obj in json["list"]:
@@ -127,7 +138,7 @@ class OpenWeatherParser(object):
             _dict["Country"]   = city.get("country" , no_info)
             if "coord" in city:
                 coord = city["coord"]
-                _dict["Longtitude"] = str(coord.get("lon", no_info))
+                _dict["Longitude"] = str(coord.get("lon", no_info))
                 _dict["Latitude"]   = str(coord.get("lat", no_info))
         _list = []
         for obj in json["list"]:
@@ -173,16 +184,29 @@ class OpenWeatherParser(object):
         return datetime.utcfromtimestamp(int(timestamp)).strftime(
             "%Y-%m-%d %H:%M:%S")
 
-# if __name__ == "__main__":
-    # from oweather_wrapper import OpenWeatherWrapper
-    # key = "d0fc78d57e3d1d08f2a3241f8bc47d3c"
-    # wrpr = OpenWeatherWrapper(key)
-    # prsr = OpenWeatherParser()
-    # json = wrpr.get_current_weather("tokyo", "imperial")
-    # data = prsr.parse_current_weather(json)
+    def temp_sign(self, units):
+        if units == "metric":
+            return u"\xb0" + "C"
+        elif units == "imperial":
+            return u"\xb0" + "F"
+            pass
+
+    def speed_metric(self, units):
+        if units == "metric":
+            return " meters/sec"
+        elif units == "imperial":
+            return " miles/hour"
+
+if __name__ == "__main__":
+    from oweather_wrapper import OpenWeatherWrapper
+    key = "d0fc78d57e3d1d08f2a3241f8bc47d3c"
+    wrpr = OpenWeatherWrapper(key)
+    prsr = OpenWeatherParser()
+    json = wrpr.get_current_weather("yokohama", "imperial")
+    data = prsr.parse_current_weather(json)
     # json = wrpr.get_five_day_forecast("tokyo", "metric")
     # data = prsr.parse_five_day_forecast(json)
     # json = wrpr.get_daily_forecast("tokyo", 4, "metric")
     # data = prsr.parse_daily_forecast(json)
-    # import json as jjson
-    # print jjson.dumps(data, indent=4, sort_keys=True)
+    import json as jjson
+    print jjson.dumps(data, indent=4, sort_keys=True)
