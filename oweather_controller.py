@@ -2,13 +2,12 @@ import sys
 import os.path
 import argparse
 from argparse import ArgumentParser
-from oweather_model import OpenWeatherMapModel
-from oweather_view import OpenWeatherMapView
+from oweather_model import OpenWeatherModel
 
-class OpenWeatherMapController:
+class OpenWeatherController:
     def __init__(self):
         self.args = self.process_arguments()
-        self.model = OpenWeatherMapModel(self.get_api_token())
+        self.model = OpenWeatherModel(self.get_api_token())
 
     def process_arguments(self):
         parser = ArgumentParser(
@@ -100,17 +99,19 @@ class OpenWeatherMapController:
                 rc_configs[key.strip()] = value.strip()[1:-1]
         return rc_configs
 
+    def get_weather(self):
+        city = self.args.city[0]
+        forecast = self.args.forecast
+        days = self.args.n
+        units = self.args.units
+        if forecast:
+            return self.model.get_five_day_forecast(city, units)
+        elif days:
+            return self.model.get_daily_forecast(city, days, units)
+        else:
+            return self.model.get_current_weather(city, units)
+
 if __name__ == "__main__":
-    owc = OpenWeatherMapController()
-    # v = OpenWeatherMapView()
-    # v.print_current_weather(
-    #     owc.model.get_current_weather(owc.args.city[0], owc.args.units))
-    # v.print_five_day_three_hour_forecast(
-    #     owc.model.get_five_day_three_hour_forecast(
-    #         owc.args.city[0], owc.args.units))
-    # v.print_daily_forcast(
-    #     owc.model.get_daily_forecast(
-    #         owc.args.city[0], 7, owc.args.units))
-    # owc.model.get_current_weather(owc.args.city[0], owc.args.units)
-    # owc.model.get_five_day_three_hour_forecast(owc.args.city[0], owc.args.units)
-    owc.model.get_daily_forecast(owc.args.city[0], 7, owc.args.units)
+    controller = OpenWeatherController()
+    data = controller.get_weather()
+    controller.model.print_json(data)
