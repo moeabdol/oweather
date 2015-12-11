@@ -59,7 +59,8 @@ class OpenWeatherParser(object):
                 no_info))
         if "wind" in json:
             wind = json["wind"]
-            _dict["Wind Direction"] = str(wind.get("deg",    no_info)) + u"\xb0"
+            _dict["Wind Direction"] = str(wind.get("deg",    no_info)) + \
+                u"\xb0".encode("utf-8")
             _dict["Wind Speed"]     = str(wind.get("speed",  no_info)) + ssign
             _dict["Wind Gust"]      = str(wind.get("gust",   no_info))
         if "clouds" in json:
@@ -124,7 +125,7 @@ class OpenWeatherParser(object):
             if "wind" in obj:
                 wind = obj["wind"]
                 weather["Wind Direction"] = str(wind.get("deg",    no_info)) + \
-                    u"\xb0"
+                    u"\xb0".encode("utf-8")
                 weather["Wind Speed"]     = str(wind.get("speed",  no_info)) + \
                     ssign
                 weather["Wind Gust"]      = str(wind.get("gust",   no_info))
@@ -191,7 +192,7 @@ class OpenWeatherParser(object):
             if "wind" in obj:
                 wind = obj["wind"]
                 weather["Wind Direction"] = str(wind.get("deg",    no_info)) + \
-                    u"\xb0"
+                    u"\xb0".encode("utf-8")
                 weather["Wind Speed"]     = str(wind.get("speed",  no_info)) + \
                     ssign
                 weather["Wind Gust"]      = str(wind.get("gust",   no_info))
@@ -212,9 +213,9 @@ class OpenWeatherParser(object):
 
     def temp_sign(self, units):
         if units == "metric":
-            return u"\xb0" + "C"
+            return u"\xb0".encode("utf-8") + "C"
         elif units == "imperial":
-            return u"\xb0" + "F"
+            return u"\xb0".encode("utf-8") + "F"
             pass
 
     def speed_metric(self, units):
