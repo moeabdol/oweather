@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 import sys
+import os
 import os.path
 import argparse
 from oweather_model import OpenWeatherModel
@@ -83,11 +83,13 @@ class OpenWeatherController:
             return self.args.api_token
 
     def get_rc_configs(self):
+        current_config = os.path.join(os.getcwd(),              ".oweatherrc")
+        home_config    = os.path.join(os.path.expanduser("~"),  ".oweatherrc")
         try:
-            if os.path.isfile("./.oweatherrc"):
-                return self.read_rc_configs_from_file("./.oweatherrc")
-            elif os.path.isfile("~/.oweatherrc"):
-                return self.read_rc_configs_from_file("~/.oweatherrc")
+            if os.path.isfile(current_config):
+                return self.read_rc_configs_from_file(current_config)
+            elif os.path.isfile(os.path.join(home_config)):
+                return self.read_rc_configs_from_file(home_config)
             else:
                 raise IOError
         except IOError:
