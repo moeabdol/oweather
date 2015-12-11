@@ -1,7 +1,6 @@
 import sys
 import os.path
 import argparse
-from argparse import ArgumentParser
 from oweather_model import OpenWeatherModel
 
 class OpenWeatherController:
@@ -10,7 +9,7 @@ class OpenWeatherController:
         self.model = OpenWeatherModel(self.get_api_token())
 
     def process_arguments(self):
-        parser = ArgumentParser(
+        parser = argparse.ArgumentParser(
             description="Display weather information on the command line " +
             "using Open Weather Map API")
         parser.add_argument(
