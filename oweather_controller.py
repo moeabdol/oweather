@@ -2,11 +2,13 @@ import sys
 import os.path
 import argparse
 from oweather_model import OpenWeatherModel
+from oweather_view import OpenWeatherView
 
 class OpenWeatherController:
     def __init__(self):
         self.args = self.process_arguments()
         self.model = OpenWeatherModel(self.get_api_token())
+        self.view = OpenWeatherView()
 
     def process_arguments(self):
         parser = argparse.ArgumentParser(
@@ -114,3 +116,4 @@ if __name__ == "__main__":
     controller = OpenWeatherController()
     data = controller.get_weather()
     controller.model.print_json(data)
+    controller.view.print_weather(data)
