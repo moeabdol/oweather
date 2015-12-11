@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from oweather_controller import OpenWeatherController
 
 owc = OpenWeatherController()

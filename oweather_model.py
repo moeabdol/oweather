@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json as jjson
 from oweather_wrapper import OpenWeatherWrapper
 from oweather_parser import OpenWeatherParser

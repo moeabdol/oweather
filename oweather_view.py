@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class OpenWeatherView(object):
     def print_weather(self, data):
         for key, value in sorted(data.items()):
