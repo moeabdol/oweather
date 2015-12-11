@@ -10,7 +10,7 @@ class OpenWeatherController:
     def __init__(self):
         self.args = self.process_arguments()
         self.model = OpenWeatherModel(self.get_api_token())
-        self.view = OpenWeatherView()
+        self.view = OpenWeatherView(self.args.plain)
 
     def process_arguments(self):
         parser = argparse.ArgumentParser(
@@ -27,6 +27,12 @@ class OpenWeatherController:
             type=str,
             default=None,
             help="connect to open weather map using API key token")
+        parser.add_argument(
+            "-p",
+            "--plain",
+            default=False,
+            action="store_true",
+            help="show output in plain-text (without pretty boarders)")
         forecast_group = parser.add_mutually_exclusive_group(required=False)
         forecast_group.add_argument(
             "-f",
